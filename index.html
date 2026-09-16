@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zion LLM Cost Calculator — compare model token pricing</title>
+<meta name="description" content="Estimate and compare LLM API costs across OpenAI, Anthropic, Google and open models. Free tool by Zion Tech Group.">
+<style>
+:root{--bg:#0d1117;--card:#161b27;--acc:#4fd1a5;--txt:#e6edf3;--mut:#8b949e}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--txt)}
+header{padding:48px 24px 24px;text-align:center;background:linear-gradient(160deg,#12302a,#0d1117)}
+h1{margin:0 0 8px}.wrap{max-width:960px;margin:0 auto;padding:24px}
+.panel{background:var(--card);border:1px solid #273043;border-radius:14px;padding:20px;margin-bottom:20px}
+label{display:block;font-size:.85rem;color:var(--mut);margin:12px 0 4px}
+input{width:100%;padding:10px;border-radius:8px;border:1px solid #2d3748;background:#0f1420;color:var(--txt)}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{padding:10px;text-align:right;border-bottom:1px solid #232b3a}th:first-child,td:first-child{text-align:left}
+tr.best td{color:var(--acc);font-weight:600}
+footer{padding:32px 24px;text-align:center;color:var(--mut);font-size:.85rem;border-top:1px solid #21262d;margin-top:40px}
+footer a{color:var(--acc);text-decoration:none;margin:0 8px}
+</style>
+</head>
+<body>
+<header><h1>🧮 Zion LLM Cost Calculator</h1>
+<p>Estimate monthly spend across popular LLM APIs. Prices per 1M tokens (indicative, Sept 2026 — verify vendor pricing pages).</p></header>
+<div class="wrap">
+<div class="panel">
+<label>Input tokens per month (millions)</label><input id="in" type="number" value="50" min="0">
+<label>Output tokens per month (millions)</label><input id="out" type="number" value="10" min="0">
+<label>Cached input share (%)</label><input id="cache" type="number" value="0" min="0" max="100">
+</div>
+<div class="panel"><table id="tbl"><thead><tr><th>Model</th><th>In $/1M</th><th>Out $/1M</th><th>Monthly cost</th></tr></thead><tbody></tbody></table></div>
+</div>
+<footer>Part of the <a href="https://ziontechgroup.com">Zion Tech Group</a> AI apps network ·
+<a href="https://ziontechgroup.com/zion-mcp-finder/">MCP Server Finder</a>
+<a href="https://ziontechgroup.com/zion-rag-eval-kit/">RAG Eval Kit</a>
+<a href="https://ziontechgroup.com/zion-ai-release-radar/">AI Release Radar</a>
+<a href="https://ziontechgroup.com/ai-services/">Zion AI services</a></footer>
+<script>
+const M=[
+['GPT-5 (flagship)',5.00,15.00],['GPT-5 mini',0.40,1.60],['GPT-5 nano',0.08,0.32],
+['Claude Opus 4.5',15.00,75.00],['Claude Sonnet 4.5',3.00,15.00],['Claude Haiku 4',0.80,4.00],
+['Gemini 2.5 Pro',1.25,10.00],['Gemini 2.5 Flash',0.30,2.50],
+['Llama 4 Maverick (hosted)',0.20,0.60],['DeepSeek V3.2',0.28,0.42],['Mistral Large 3',2.00,6.00]];
+function calc(){const i=+document.getElementById('in').value||0,o=+document.getElementById('out').value||0,c=(+document.getElementById('cache').value||0)/100;
+const rows=M.map(([n,pi,po])=>{const eff=i*(1-c)+i*c*0.1;const cost=eff*pi+o*po;return[n,pi,po,cost]}).sort((a,b)=>a[3]-b[3]);
+document.querySelector('#tbl tbody').innerHTML=rows.map((r,k)=>`<tr class="${k===0?'best':''}"><td>${r[0]}</td><td>$${r[1].toFixed(2)}</td><td>$${r[2].toFixed(2)}</td><td>$${r[3].toLocaleString(undefined,{maximumFractionDigits:0})}</td></tr>`).join('');}
+['in','out','cache'].forEach(id=>document.getElementById(id).addEventListener('input',calc));calc();
+</script>
+</body>
+</html>
